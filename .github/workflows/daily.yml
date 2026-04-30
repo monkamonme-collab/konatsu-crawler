@@ -1,0 +1,26 @@
+name: Daily Konatsu Alert
+
+on:
+  schedule:
+    # 這是 UTC 時間，00:00 代表台灣時間早上 08:00
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 讓你可以隨時手動點擊按鈕測試
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 複製代碼到虛擬機
+        uses: actions/checkout@v3
+
+      - name: 設定 Python 環境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: 安裝必要套件
+        run: |
+          pip install feedparser requests
+
+      - name: 執行爬蟲腳本
+        run: python crawl.py
