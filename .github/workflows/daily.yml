@@ -2,25 +2,25 @@ name: Daily Konatsu Alert
 
 on:
   schedule:
-    # 改成 UTC 23:53，等於台灣時間 07:53，通常會比 08:00 整點快很多
-    - cron: '53 23 * * *'
-  workflow_dispatch: # 讓你可以隨時手動點擊按鈕測試
+    # 改成 07:55 台灣時間（UTC 23:55），通常比整點更準時
+    - cron: '55 23 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 複製代碼到虛擬機
-        uses: actions/checkout@v3
+      # 將 v3 改為 v4，將 v4 改為 v5，可消除警告
+      - name: 複製代碼
+        uses: actions/checkout@v4
 
-      - name: 設定 Python 環境
-        uses: actions/setup-python@v4
+      - name: 設定 Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      - name: 安裝必要套件
-        run: |
-          pip install feedparser requests
+      - name: 安裝套件
+        run: pip install feedparser requests
 
-      - name: 執行爬蟲腳本
+      - name: 執行爬蟲
         run: python crawl.py
