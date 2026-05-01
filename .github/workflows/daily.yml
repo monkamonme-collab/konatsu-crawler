@@ -2,8 +2,8 @@ name: Daily Konatsu Alert
 
 on:
   schedule:
-    # 這是 UTC 時間，00:00 代表台灣時間早上 08:00
-    - cron: '0 0 * * *'
+    # 改成 UTC 23:53，等於台灣時間 07:53，通常會比 08:00 整點快很多
+    - cron: '53 23 * * *'
   workflow_dispatch: # 讓你可以隨時手動點擊按鈕測試
 
 jobs:
