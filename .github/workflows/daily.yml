@@ -20,7 +20,7 @@ jobs:
           python-version: '3.9'
 
       - name: 安裝套件
-        run: pip install feedparser requests
+        run: pip install feedparser requests beautifulsoup4
 
       - name: 執行爬蟲
         run: python crawl.py
