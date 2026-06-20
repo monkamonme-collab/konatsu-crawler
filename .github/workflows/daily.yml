@@ -20,10 +20,11 @@ jobs:
           python-version: '3.9'
 
       - name: 安裝套件
-        run: pip install feedparser requests beautifulsoup4
+        run: pip install feedparser requests beautifulsoup4 lxml
 
       - name: 執行爬蟲
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: python crawl.py
