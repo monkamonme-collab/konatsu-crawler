@@ -23,4 +23,7 @@ jobs:
         run: pip install feedparser requests beautifulsoup4
 
       - name: 執行爬蟲
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python crawl.py
