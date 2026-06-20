@@ -15,43 +15,38 @@ def get_og_image(url):
             if "google" in img_url.lower(): return default_konatsu_img
             return img_url
     except Exception as e:
-        print(f"[get_og_image] Error fetching {url}: {e}")
+        print(f"[get_og_image] Error: {e}")
     return default_konatsu_img
 
 def crawl_and_push():
-    # SEO 優化：改為搜尋日文原文，確保每天都有新鮮事
     url = "https://news.google.com/rss/search?q=加藤小夏%20OR%20かとうこなつ&hl=ja&gl=JP&ceid=JP:ja"
-    print(f"[crawl] Fetching RSS: {url}")
+    print(f"[crawl] Fetching RSS...")
     feed = feedparser.parse(url)
     print(f"[crawl] Found {len(feed.entries)} entries")
     if not feed.entries:
-        print("[crawl] No entries found, exiting.")
+        print("[crawl] No entries, exiting.")
         return
 
     entry = feed.entries[0]
-    print(f"[crawl] Latest entry: {entry.title}")
-    print(f"[crawl] Link: {entry.link}")
+    print(f"[crawl] Title: {entry.title}")
     photo_url = get_og_image(entry.link)
-    print(f"[crawl] Photo URL: {photo_url}")
+    print(f"[crawl] Photo: {photo_url}")
 
-    # 這裡直接用原本的 title，Telegram 對 HTML 的寬容度通常足夠
     msg = f"<b>【加藤小夏 最新資訊】</b>\n\n📌 <b>{entry.title}</b>\n\n🔗 <a href='{entry.link}'>點擊閱讀全文</a>"
 
     bot_token = os.environ.get("BOT_TOKEN", "")
     chat_id = os.environ.get("CHAT_ID", "")
-    print(f"[crawl] bot_token present: {bool(bot_token)}, chat_id present: {bool(chat_id)}")
+    print(f"[crawl] token={'OK' if bot_token else 'MISSING'}, chat={'OK' if chat_id else 'MISSING'}")
 
     send_photo_url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
     payload = {"chat_id": chat_id, "photo": photo_url, "caption": msg, "parse_mode": "HTML"}
-
     res = requests.post(send_photo_url, json=payload)
-    print(f"[crawl] sendPhoto status: {res.status_code}, response: {res.text[:200]}")
+    print(f"[crawl] sendPhoto: {res.status_code} {res.text[:300]}")
 
     if res.status_code != 200:
-        # 如果圖片失敗，發送純文字備案
         send_msg_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         res2 = requests.post(send_msg_url, json={"chat_id": chat_id, "text": f"【加藤小夏】\n{entry.title}\n{entry.link}"})
-        print(f"[crawl] sendMessage fallback status: {res2.status_code}, response: {res2.text[:200]}")
+        print(f"[crawl] sendMessage: {res2.status_code} {res2.text[:300]}")
 
 if __name__ == "__main__":
     crawl_and_push()
