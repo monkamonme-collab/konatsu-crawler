@@ -1,5 +1,4 @@
 import os
-import html
 import feedparser
 import requests
 from bs4 import BeautifulSoup
@@ -15,8 +14,8 @@ def get_og_image(url):
             img_url = img_tag['content']
             if "google" in img_url.lower(): return default_konatsu_img
             return img_url
-    except:
-        pass
+    except Exception as e:
+        print(f"[get_og_image] Error fetching {url}: {e}")
     return default_konatsu_img
 
 def crawl_and_push():
@@ -27,19 +26,18 @@ def crawl_and_push():
 
     entry = feed.entries[0]
     photo_url = get_og_image(entry.link)
-    
+
     # 這裡直接用原本的 title，Telegram 對 HTML 的寬容度通常足夠
     msg = f"<b>【加藤小夏 最新資訊】</b>\n\n📌 <b>{entry.title}</b>\n\n🔗 <a href='{entry.link}'>點擊閱讀全文</a>"
-    
-    # 直接填入你的 Token 確保萬無一失，不依賴可能未設定的 getenv
-    bot_token = "8784938561:AAHyB3vE__zfmbmO0-BuESNO9OiOsM99eZk"
-    chat_id = "1738481715"
-    
+
+    bot_token = os.environ.get("BOT_TOKEN", "")
+    chat_id = os.environ.get("CHAT_ID", "")
+
     send_photo_url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
     payload = {"chat_id": chat_id, "photo": photo_url, "caption": msg, "parse_mode": "HTML"}
-    
+
     res = requests.post(send_photo_url, json=payload)
-    
+
     if res.status_code != 200:
         # 如果圖片失敗，發送純文字備案
         send_msg_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
